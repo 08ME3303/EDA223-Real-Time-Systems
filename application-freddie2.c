@@ -83,16 +83,15 @@ Tonegen tonegen = {initObject(), 500, 1, 0, 1};
 // Initial load 1000.
 Background background = { initObject(), 1000 };
 
-int reader(App *, int);
+void reader(App *, int);
 Serial sci0 = initSerial(SCI_PORT0, &app, reader);
 
-int motd(App* self, int unused) {
+void motd(App* self, int unused) {
   SCI_INIT(&sci0);
   SCI_WRITE(&sci0, "Hi! Press 'x' to start normal execution and 'y' to start benchmarking.\n");
-  return 0;
 }
 
-int run(App* self, int unused) {
+void run(App* self, int unused) {
   SCI_WRITE(&sci0, "\nRun\n");
   if (self->running) {
     SCI_WRITE(&sci0, "\nError: Already running!\n");
@@ -106,7 +105,6 @@ int run(App* self, int unused) {
     SCI_WRITE(&sci0, "Startup complete.\n");
     self->running = 1;
   }
-  return 0;
 }
 
 int main() {
@@ -141,7 +139,7 @@ int main() {
     SCI_WRITE(&sci0, buf);                        \
   }
 
-int benchmark(App* self, int unused) {
+void benchmark(App* self, int unused) {
   if (self->running) {
     SCI_WRITE(&sci0, "\nError: Can't benchmark while already running!\n");
   } else {
@@ -167,11 +165,10 @@ int benchmark(App* self, int unused) {
     SCI_WRITE(&sci0, "Benchmark completed.\n");
     bench = 0;
   }
-  return 0;
 }
 
 /* -----  Keyboard control  ----- */
-int reader(App *self, int c) {
+void reader(App *self, int c) {
   SCI_WRITECHAR(&sci0, c);  // echo
 
   // Note that the read race conditions are unproblematic!
@@ -202,6 +199,5 @@ int reader(App *self, int c) {
   } else {
     SCI_WRITE(&sci0, "\nIgnored unknown key.\n");
   }
-  return 0;
 }
 
