@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-// PSA: This code was not tested!
 
 // Long live global variables! (I know this is ugly, but also convenient.)
 int deadline = 0;
@@ -22,7 +21,7 @@ typedef struct {
 
 char* const DAC_OUT = (char*) 0x4000741C;
 
-int edge(Tonegen* self, int unused) {
+void edge(Tonegen* self, int unused) {
   if (!deadline && !bench) {
     AFTER(USEC(self->period), self, edge, NULL);
   } else if (deadline && !bench) {
@@ -31,23 +30,18 @@ int edge(Tonegen* self, int unused) {
 
   self->out_state = !self->out_state;
   *DAC_OUT = self->out_state && !self->mute ? self->volume : 0;
-  
-  return 0;
 }
 
-int set_volume(Tonegen* self, int arg) {
+void set_volume(Tonegen* self, int arg) {
   self->volume = arg < 0 ? 0 : (arg > 20 ? 20 : arg);
-  return 0;
 }
 
-int set_mute(Tonegen* self, int arg) {
+void set_mute(Tonegen* self, int arg) {
   self->mute = arg;
-  return 0;
 }
 
-int set_period(Tonegen* self, int arg) {
+void set_period(Tonegen* self, int arg) {
   self->period = arg < 1 ? 1 : (arg > MSEC(10) ? MSEC(10) : arg);
-  return 0;
 }
 
 
@@ -59,7 +53,7 @@ typedef struct {
 
 const int background_period = USEC(1300);
 
-int busy(Background* self, int unused) {
+void busy(Background* self, int unused) {
   if (!deadline && !bench) {
     AFTER(background_period, self, busy, NULL);
   } else if (deadline && !bench) {
@@ -68,12 +62,10 @@ int busy(Background* self, int unused) {
 
   // Spin for a bit.
   for (int i=0; i < self->load; i++);
-  return 0;
 }
 
-int set_load(Background* self, int arg) {
+void set_load(Background* self, int arg) {
   self->load = arg;
-  return 0;
 }
 
 
@@ -212,3 +204,4 @@ int reader(App *self, int c) {
   }
   return 0;
 }
+
