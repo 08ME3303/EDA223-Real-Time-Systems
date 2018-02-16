@@ -60,8 +60,8 @@ AS       := /usr/bin/arm-none-eabi-as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/application.c$(ObjectSuffix) $(IntermediateDirectory)/sciTinyTimber.c$(ObjectSuffix) $(IntermediateDirectory)/startup.c$(ObjectSuffix) $(IntermediateDirectory)/TinyTimber.c$(ObjectSuffix) $(IntermediateDirectory)/dispatch.s$(ObjectSuffix) $(IntermediateDirectory)/canTinyTimber.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_dac.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_gpio.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_rcc.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_tim.c$(ObjectSuffix) \
-	$(IntermediateDirectory)/driver_src_stm32f4xx_usart.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_can.c$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/application.c$(ObjectSuffix) $(IntermediateDirectory)/sciTinyTimber.c$(ObjectSuffix) $(IntermediateDirectory)/startup.c$(ObjectSuffix) $(IntermediateDirectory)/TinyTimber.c$(ObjectSuffix) $(IntermediateDirectory)/dispatch.s$(ObjectSuffix) $(IntermediateDirectory)/canTinyTimber.c$(ObjectSuffix) $(IntermediateDirectory)/conductor.c$(ObjectSuffix) $(IntermediateDirectory)/controller.c$(ObjectSuffix) $(IntermediateDirectory)/instrument.c$(ObjectSuffix) $(IntermediateDirectory)/performer.c$(ObjectSuffix) \
+	$(IntermediateDirectory)/tonegen.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_dac.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_gpio.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_rcc.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_tim.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_usart.c$(ObjectSuffix) $(IntermediateDirectory)/driver_src_stm32f4xx_can.c$(ObjectSuffix) 
 
 
 
@@ -144,6 +144,46 @@ $(IntermediateDirectory)/canTinyTimber.c$(DependSuffix): canTinyTimber.c
 
 $(IntermediateDirectory)/canTinyTimber.c$(PreprocessSuffix): canTinyTimber.c
 	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/canTinyTimber.c$(PreprocessSuffix) canTinyTimber.c
+
+$(IntermediateDirectory)/conductor.c$(ObjectSuffix): conductor.c $(IntermediateDirectory)/conductor.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "/home/sanoop/Documents/EDA223-Real-Time-Systems/orchestra-frederik/conductor.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/conductor.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/conductor.c$(DependSuffix): conductor.c
+	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/conductor.c$(ObjectSuffix) -MF$(IntermediateDirectory)/conductor.c$(DependSuffix) -MM conductor.c
+
+$(IntermediateDirectory)/conductor.c$(PreprocessSuffix): conductor.c
+	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/conductor.c$(PreprocessSuffix) conductor.c
+
+$(IntermediateDirectory)/controller.c$(ObjectSuffix): controller.c $(IntermediateDirectory)/controller.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "/home/sanoop/Documents/EDA223-Real-Time-Systems/orchestra-frederik/controller.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/controller.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/controller.c$(DependSuffix): controller.c
+	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/controller.c$(ObjectSuffix) -MF$(IntermediateDirectory)/controller.c$(DependSuffix) -MM controller.c
+
+$(IntermediateDirectory)/controller.c$(PreprocessSuffix): controller.c
+	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/controller.c$(PreprocessSuffix) controller.c
+
+$(IntermediateDirectory)/instrument.c$(ObjectSuffix): instrument.c $(IntermediateDirectory)/instrument.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "/home/sanoop/Documents/EDA223-Real-Time-Systems/orchestra-frederik/instrument.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/instrument.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/instrument.c$(DependSuffix): instrument.c
+	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/instrument.c$(ObjectSuffix) -MF$(IntermediateDirectory)/instrument.c$(DependSuffix) -MM instrument.c
+
+$(IntermediateDirectory)/instrument.c$(PreprocessSuffix): instrument.c
+	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/instrument.c$(PreprocessSuffix) instrument.c
+
+$(IntermediateDirectory)/performer.c$(ObjectSuffix): performer.c $(IntermediateDirectory)/performer.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "/home/sanoop/Documents/EDA223-Real-Time-Systems/orchestra-frederik/performer.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/performer.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/performer.c$(DependSuffix): performer.c
+	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/performer.c$(ObjectSuffix) -MF$(IntermediateDirectory)/performer.c$(DependSuffix) -MM performer.c
+
+$(IntermediateDirectory)/performer.c$(PreprocessSuffix): performer.c
+	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/performer.c$(PreprocessSuffix) performer.c
+
+$(IntermediateDirectory)/tonegen.c$(ObjectSuffix): tonegen.c $(IntermediateDirectory)/tonegen.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "/home/sanoop/Documents/EDA223-Real-Time-Systems/orchestra-frederik/tonegen.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/tonegen.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/tonegen.c$(DependSuffix): tonegen.c
+	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/tonegen.c$(ObjectSuffix) -MF$(IntermediateDirectory)/tonegen.c$(DependSuffix) -MM tonegen.c
+
+$(IntermediateDirectory)/tonegen.c$(PreprocessSuffix): tonegen.c
+	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/tonegen.c$(PreprocessSuffix) tonegen.c
 
 $(IntermediateDirectory)/driver_src_stm32f4xx_dac.c$(ObjectSuffix): driver/src/stm32f4xx_dac.c $(IntermediateDirectory)/driver_src_stm32f4xx_dac.c$(DependSuffix)
 	$(CC) $(SourceSwitch) "/home/sanoop/Documents/EDA223-Real-Time-Systems/orchestra-frederik/driver/src/stm32f4xx_dac.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/driver_src_stm32f4xx_dac.c$(ObjectSuffix) $(IncludePath)

@@ -1,7 +1,7 @@
 /* -----  Tone Generator  ----- */
 
 // There is exactly one tone generator!
-typedef struct Tonegen;
+typedef struct Tonegen Tonegen;
 extern Tonegen tonegen;
 #define TONEGEN_INIT(arg_tonegen) SYNC(arg_tonegen, tonegen_start, 0)
 

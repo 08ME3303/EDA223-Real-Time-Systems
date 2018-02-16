@@ -2,19 +2,19 @@
 #include "TinyTimber.h"
 #include "tonegen.h"
 
-typedef struct {
+struct Tonegen {
   Object super;
   Msg call;
   Time period;    // 50us <= period <= 5ms (10kHz >= f >= 100Hz)
   int volume;     // 0 <= volume <= 20
-} Tonegen;
+};
 
 // There single global tone generator!
 Tonegen tonegen = { initObject()  // Object
                   , NULL          // Msg
                   ,  USEC(1000)   // Time, corresponding to 500 Hz
                   ,  0            // Volume, muted
-                  }
+                  };
 
 // Setters
 void tonegen_set_volume(Tonegen* self, int vol) {
@@ -22,7 +22,7 @@ void tonegen_set_volume(Tonegen* self, int vol) {
 }
 
 void tonegen_set_period(Tonegen* self, int per) {
-  self->period = USEC( per < 50 ? 50 : (per > 5000 ? 5000 : per);
+  self->period = USEC( per < 50 ? 50 : (per > 5000 ? 5000 : per) );
 }
 
 
@@ -30,7 +30,7 @@ void tonegen_set_period(Tonegen* self, int per) {
 char* const DAC_OUT = (char*) 0x4000741C;
 
 static void tonegen_edge(Tonegen* self, int state) {
-  *DAC_OUT = self->out_state ? self->volume : 0;
+  *DAC_OUT = state ? self->volume : 0;
   ABORT(self->call);
   self->call = SEND(self->period, USEC(100), self, tonegen_edge, !state);
 }

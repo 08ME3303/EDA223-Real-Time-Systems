@@ -4,12 +4,12 @@
 #include "canTinyTimber.h"
 #include "sciTinyTimber.h"
 
-typedef struct {
+struct Conductor {
   Object super;
   Msg call;
   int bpm;
   int key;
-} Conductor;
+};
 
 Conductor conductor = { initObject(), NULL, 120, 0 };
 
@@ -18,41 +18,44 @@ extern Serial sci;
 
 static int conduct_can_debug = 1;
 
+static void conductor_sync(Conductor* self, int unused);
+
+static void conductor_send(Conductor* self, char* text);
+
 void conductor_conduct(Conductor* self, int unused) {
   // make sure everybody starts with the same tempo
   conductor_set_bpm(self, self->bpm);
   conductor_set_key(self,self->key);
-  conductor_send(&app, "play");
+  conductor_send(self, "play");
 
-  ABORT(this->call);
+  ABORT(self->call);
   // sync at every beat (quarter note)
-  this->call = SEND(MSEC((unsigned int) 60000 / self->bpm), USEC(100), self, conductor_sync, 0);
+  self->call = SEND(MSEC((unsigned int) 60000 / self->bpm), USEC(100), self, conductor_sync, 0);
 }
 
 // halt and reset the orchestra.
 void conductor_stop(Conductor* self, int unused) {
   ABORT(self->call);
-  conductor_send(&app, "stop");
+  conductor_send(self, "stop");
 }
 
 void conductor_set_bpm(Conductor* self, int bpm) {
   self->bpm = bpm;
   char buf[8];
   sprintf(buf, "bpm %d", bpm);
-  conductor_send(&app, buf);
+  conductor_send(self, buf);
 }
 
 void conductor_set_key(Conductor* self, int key) {
   self->key = key;
   char buf[8];
-  sprintf(buf, "key %d", k);
-  conductor_send(&app, buf);
+  sprintf(buf, "key %d", key);
+  conductor_send(self, buf);
 }
 
-
 static void conductor_sync(Conductor* self, int unused) {
-  conductor_send(&app, "sync");
-  this->call = SEND(MSEC((unsigned int) 60000 / self->bpm), USEC(100), self, conductor_sync, 0);
+  conductor_send(self, "sync");
+  self->call = SEND(MSEC((unsigned int) 60000 / self->bpm), USEC(100), self, conductor_sync, 0);
 }
 
 static void conductor_send(Conductor* self, char* text) {
@@ -60,19 +63,19 @@ static void conductor_send(Conductor* self, char* text) {
     msg.msgId = 1;      // unused
     msg.nodeId = nodeId;
     msg.length = 8;
-    strcpy(msg.buf, text);
+    strcpy(msg.buff, text);
     CAN_SEND(&can, &msg);
 
     if (conduct_can_debug) {
       SCI_WRITE(&sci, "Can msg: ");
-      SCI_WRITE(&sci, msg->buff);
+      SCI_WRITE(&sci, msg.buff);
       SCI_WRITE(&sci, "\n");
     } else {
-      SYNC(&controller, controller_parsemsg, &msg); // loop-back to controller
+      //SYNC(&controller, controller_parsemsg, &msg); // loop-back to controller
     }
 }
 
-void conductor_control(Conductor*, int c) {
+void conductor_control(Conductor* self, int c) {
   switch (c) {
     case 'a': if (!conduct_can_debug) {
                 SCI_WRITE(&sci, "Conductor CAN debug enabled\n");

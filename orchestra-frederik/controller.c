@@ -1,16 +1,21 @@
 /* -----  Controller  ----- */
 #include "controller.h"
 #include "sciTinyTimber.h"
+#include "performer.h"
 
-#include <stdlib.h>
+//#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 struct Controller {
   Object super;
 };
 
+const int nodeId = 0; // fill in proper ID
+
 Controller controller = { initObject() };
 
-extern Sci sci;
+extern Serial sci;
 
 void controller_CAN(Controller* self, CANMsg* msg) {
   SCI_WRITE(&sci, "Can msg received: ");
@@ -24,9 +29,9 @@ void controller_CAN(Controller* self, CANMsg* msg) {
   } else if (strcmp(msg->buff, "sync") == 0) {
     SYNC(&performer, performer_sync, 0);
   } else if (strncmp(msg->buff, "bpm ", 4) == 0) {
-    SYNC(&performer, performer_set_bpm, atoi(msg->buff + 4););
+    SYNC(&performer, performer_set_bpm, atoi(msg->buff + 4));
   } else if (strncmp(msg->buff, "key ", 4) == 0) {
-    SYNC(&performer, performer_set_key, atoi(msg->buff + 4););
+    SYNC(&performer, performer_set_key, atoi(msg->buff + 4));
   } else {
     SCI_WRITE(&sci, "Ignored unknown CAN message.\n");
   }

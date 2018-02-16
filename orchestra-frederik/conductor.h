@@ -1,6 +1,5 @@
 /* -----  CANductor  ----- */
-struct Conductor;
-typedef struct Conductor Conductor
+typedef struct Conductor Conductor;
 extern Conductor conductor;
 
 #define CONDUCTOR_INIT(arg_conductor) ;

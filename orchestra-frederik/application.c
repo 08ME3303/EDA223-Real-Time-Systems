@@ -21,7 +21,9 @@ typedef struct {
 
 App app = { initObject() };
 
+void app_sci(App* self, int c);
 Serial sci = initSerial(SCI_PORT0, &app, app_sci);
+void app_can(App* self, int unused);
 Can can = initCan(CAN_PORT0, &app, app_can);
 
 // Keyboard control
@@ -32,16 +34,16 @@ void app_sci(App* self, int c) {
   SCI_WRITE(&sci, buf);
 
   if (c < 'n') { // todo: control conductor explicitely
-    SYNC(&conductor, conductor_control, c);
+    //SYNC(&conductor, conductor_control, c);
   } else {       // todo: control controller explicitely
-    SYNC(&controller, controller_keyboard, c);
+    //SYNC(&controller, controller_keyboard, c);
   }
 }
 
 void app_can(App* self, int unused) {
   CANMsg msg;
   CAN_RECEIVE(&can, &msg);
-  SYNC(&controller, controller_CAN, &msg);
+  //SYNC(&controller, controller_CAN, &msg);
 }
 
 // optional: make all inits runtime
@@ -57,7 +59,7 @@ int app_init(App* self, int unused) {
 
 int main() {
   INSTALL(&sci, sci_interrupt, SCI_IRQ0);
-  INSTALL(&can0, can_interrupt, CAN_IRQ0);
+  INSTALL(&can, can_interrupt, CAN_IRQ0);
   TINYTIMBER(&app, app_init, 0);
 }
 

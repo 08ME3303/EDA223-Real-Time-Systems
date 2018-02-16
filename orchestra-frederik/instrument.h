@@ -1,7 +1,11 @@
+#ifndef INSTRUMENT_H
+#define INSTRUMENT_H
+
 /* -----  Instrument  ----- */
+#include "TinyTimber.h"
 #include "tonegen.h"
 
-typedef struct Instrument;
+typedef struct Instrument Instrument;
 extern Instrument instrument;
 
 // Initialising the instrument means initialising the tone generator.
@@ -20,3 +24,4 @@ void instrument_play_note(Instrument*, Note*);
 // (DEBUG) Control directly via keyboard (char) commands
 void instrument_control(Instrument*, int c);
 
+#endif
