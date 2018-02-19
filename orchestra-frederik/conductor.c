@@ -4,6 +4,9 @@
 #include "canTinyTimber.h"
 #include "sciTinyTimber.h"
 
+#include <stdio.h>
+#include <string.h>
+
 struct Conductor {
   Object super;
   Msg call;
@@ -63,7 +66,7 @@ static void conductor_send(Conductor* self, char* text) {
     msg.msgId = 1;      // unused
     msg.nodeId = nodeId;
     msg.length = 8;
-    strcpy(msg.buff, text);
+    strcpy((char*) msg.buff, text);
     CAN_SEND(&can, &msg);
 
     if (conduct_can_debug) {

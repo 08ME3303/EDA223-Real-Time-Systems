@@ -3,7 +3,7 @@
 #include "sciTinyTimber.h"
 #include "performer.h"
 
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -22,16 +22,16 @@ void controller_CAN(Controller* self, CANMsg* msg) {
   SCI_WRITE(&sci, msg->buff);
   SCI_WRITE(&sci, "\n");
 
-  if (strcmp(msg->buff, "stop") == 0) {
+  if (strcmp((char*) msg->buff, "stop") == 0) {
     SYNC(&performer, performer_stop, 0);
-  } else if (strcmp(msg->buff, "play") == 0) {
+  } else if (strcmp((char*) msg->buff, "play") == 0) {
     SYNC(&performer, performer_play, nodeId * 8 * 2);
-  } else if (strcmp(msg->buff, "sync") == 0) {
+  } else if (strcmp((char*) msg->buff, "sync") == 0) {
     SYNC(&performer, performer_sync, 0);
-  } else if (strncmp(msg->buff, "bpm ", 4) == 0) {
-    SYNC(&performer, performer_set_bpm, atoi(msg->buff + 4));
-  } else if (strncmp(msg->buff, "key ", 4) == 0) {
-    SYNC(&performer, performer_set_key, atoi(msg->buff + 4));
+  } else if (strncmp((char*) msg->buff, "bpm ", 4) == 0) {
+    SYNC(&performer, performer_set_bpm, atoi((char*) msg->buff + 4));
+  } else if (strncmp((char*) msg->buff, "key ", 4) == 0) {
+    SYNC(&performer, performer_set_key, atoi((char*) msg->buff + 4));
   } else {
     SCI_WRITE(&sci, "Ignored unknown CAN message.\n");
   }

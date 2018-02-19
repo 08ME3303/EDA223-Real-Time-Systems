@@ -35,15 +35,15 @@ static void tonegen_edge(Tonegen* self, int state) {
   self->call = SEND(self->period, USEC(100), self, tonegen_edge, !state);
 }
 
-void tonegen_start(Tonegen* self, int unused) {
-  tonegen_edge(self, 0);
+void tonegen_init() {
+  SYNC(&tonegen, tonegen_edge, 0);
 }
 
 
 // (DEBUG) Control directly via keyboard (char) commands
 void tonegen_control(Tonegen* self, int c) {
   switch (c) {
-    case 'a': TONEGEN_INIT(self); break;
+    case 'a': tonegen_init(); break;
     case 'b': tonegen_set_volume(self, self->volume + 1); break;
     case 'c': tonegen_set_volume(self, self->volume - 1); break;
     case 'd': tonegen_set_period(self, USEC_OF(self->period) << 1); break;

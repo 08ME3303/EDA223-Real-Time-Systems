@@ -12,9 +12,14 @@ struct Performer {
   int eighths_delay; // delay until next note
 };
 
+Performer performer;
+
 // start with 120 Hz
-Performer performer = { initObject(), NULL, 0,
+void performer_init() {
+	instrument_init();
+	performer = (Performer) { initObject(), NULL, 0,
                         MSEC(60000 / (4 * 120)), 3, 0, 0 };
+}
 
 void performer_set_key(Performer* self, int key) {
   self->key = key;
@@ -59,7 +64,7 @@ void performer_sync(Performer* self, int unused) {
 
 void performer_control(Performer* self, int c) {
   switch (c) {
-    case 'a': PERFORMER_INIT(self); break;
+    case 'a': performer_init(); break;
     case 'b': performer_play(self,0); break;
     case 'c': performer_stop(self,0); break;
     case 'd': performer_sync(self,0); break;

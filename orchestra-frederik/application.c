@@ -30,7 +30,7 @@ Can can = initCan(CAN_PORT0, &app, app_can);
 void app_sci(App* self, int c) {
   char buf[80];
 
-  sprintf(buf,"SCI char: %c\n");
+  sprintf(buf,"SCI char: %c\n",c);
   SCI_WRITE(&sci, buf);
 
   if (c < 'n') { // todo: control conductor explicitely
@@ -47,12 +47,9 @@ void app_can(App* self, int unused) {
 }
 
 // optional: make all inits runtime
-int app_init(App* self, int unused) {
+void app_init(App* self, int unused) {
   SCI_INIT(&sci);
   CAN_INIT(&can);
-  TONEGEN_INIT(&tonegen);
-  INSTRUMENT_INIT(&instrument);
-  PERFORMER_INIT(&performer);
   CONTROLLER_INIT(&controller);
   CONDUCTOR_INIT(&conductor);
 }

@@ -1,5 +1,6 @@
 /* -----  Instrument  ----- */
 #include "TinyTimber.h"
+#include "tonegen.h"
 #include "instrument.h"
 
 struct Instrument {
@@ -7,7 +8,12 @@ struct Instrument {
   Msg call;
 };
 
-Instrument instrument = { initObject(), NULL };
+Instrument instrument;
+
+void instrument_init() {
+	tonegen_init();
+	instrument = (Instrument) { initObject(), NULL };
+}
 
 const int tone_lookup[MAX_PITCHINDEX - MIN_PITCHINDEX + 1] = {2024,1911,1803,1702,1607,
   1516,1413,1351,1275,1203,1136,1072,1012,955,901,851,803,758,715,675,637,601,
@@ -30,7 +36,7 @@ static void instrument_end_note(Instrument* self, int unused) {
 // (DEBUG) Control directly via keyboard (char) commands
 void instrument_control(Instrument* self, int c) {
   if (c == 'a') {
-    INSTRUMENT_INIT(self);
+    instrument_init();
   } else if (c >= 'b' && c <= 'b' + MAX_PITCHINDEX - MIN_PITCHINDEX) {
     Note note = {c - 'b' + MIN_PITCHINDEX, SEC(1), 3};
     instrument_play_note(self, &note);

@@ -1,15 +1,11 @@
+/* -----  Instrument  ----- */
 #ifndef INSTRUMENT_H
 #define INSTRUMENT_H
-
-/* -----  Instrument  ----- */
 #include "TinyTimber.h"
-#include "tonegen.h"
 
 typedef struct Instrument Instrument;
 extern Instrument instrument;
-
-// Initialising the instrument means initialising the tone generator.
-#define INSTRUMENT_INIT(arg_instrument) ;
+void instrument_init(); // also initialises tonegen
 
 #define MIN_PITCHINDEX (-10)
 #define MAX_PITCHINDEX 14
