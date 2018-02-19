@@ -9,7 +9,6 @@
 #include "tonegen.h"
 #include "instrument.h"
 #include "performer.h"
-#include "controller.h"
 #include "conductor.h"
 
 // todo: add bpm, volume state...
@@ -74,7 +73,8 @@ void app_can(App* self, CANMsg* msg) {
   }
 }
 
-void controller_keyboard(Controller* self, int c) {
+/* SCI still controls volume and key of performer, rest is done by conductor
+void controller_keyboard(App* self, int c) {
   if (c >= 'a' && c <= 'a' + 20) {
     SYNC(&performer, performer_set_volume, c - 'a');
 
@@ -85,11 +85,13 @@ void controller_keyboard(Controller* self, int c) {
     SCI_WRITE(&sci, "Ignored unknown keyboad input.\n");
   }
 }
+*/
 
-// optional: make all inits runtime
 void app_init(App* self, int unused) {
   SCI_INIT(&sci);
   CAN_INIT(&can);
+  
+  SCI_WRITE(&sci, "Select: 0 -> Tonegen, 1 -> Instrument, 2 -> Performer, 3 -> Conductor.\n");
 }
 
 int main() {

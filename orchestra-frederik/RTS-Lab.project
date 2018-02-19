@@ -60,8 +60,6 @@
     <File Name="canTinyTimber.c"/>
     <File Name="conductor.c" ExcludeProjConfig=""/>
     <File Name="conductor.h"/>
-    <File Name="controller.c" ExcludeProjConfig=""/>
-    <File Name="controller.h"/>
     <File Name="instrument.c"/>
     <File Name="instrument.h"/>
     <File Name="performer.c"/>
