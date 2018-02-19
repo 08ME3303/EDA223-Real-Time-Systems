@@ -11,7 +11,6 @@ struct Controller {
   Object super;
 };
 
-const int nodeId = 0; // fill in proper ID
 
 Controller controller = { initObject() };
 
@@ -37,7 +36,7 @@ void controller_CAN(Controller* self, CANMsg* msg) {
   }
 }
 
-void controller_keyboard(Controller* self, int c) {
+void controller_debug(Controller* self, int c) {
   if (c >= 'a' && c <= 'a' + 20) {
     SYNC(&performer, performer_set_volume, c - 'a');
 

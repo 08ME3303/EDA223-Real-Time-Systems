@@ -18,6 +18,6 @@ typedef struct {
 void instrument_play_note(Instrument*, Note*);
 
 // (DEBUG) Control directly via keyboard (char) commands
-void instrument_control(Instrument*, int c);
+void instrument_debug(Instrument*, int c);
 
 #endif

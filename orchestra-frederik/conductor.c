@@ -1,6 +1,7 @@
 /* -----  CANductor  ----- */
+#include "TinyTimber.h"
 #include "conductor.h"
-#include "controller.h"
+#include "application.h"
 #include "canTinyTimber.h"
 #include "sciTinyTimber.h"
 
@@ -14,7 +15,11 @@ struct Conductor {
   int key;
 };
 
-Conductor conductor = { initObject(), NULL, 120, 0 };
+Conductor conductor;
+
+void conductor_init() {
+  conductor = (Conductor) { initObject(), NULL, 120, 0 };
+}
 
 extern Can can;
 extern Serial sci;
@@ -78,7 +83,7 @@ static void conductor_send(Conductor* self, char* text) {
     }
 }
 
-void conductor_control(Conductor* self, int c) {
+void conductor_debug(Conductor* self, int c) {
   switch (c) {
     case 'a': if (!conduct_can_debug) {
                 SCI_WRITE(&sci, "Conductor CAN debug enabled\n");

@@ -68,6 +68,7 @@
     <File Name="performer.h"/>
     <File Name="tonegen.c"/>
     <File Name="tonegen.h"/>
+    <File Name="application.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

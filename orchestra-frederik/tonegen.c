@@ -41,7 +41,7 @@ void tonegen_init() {
 
 
 // (DEBUG) Control directly via keyboard (char) commands
-void tonegen_control(Tonegen* self, int c) {
+void tonegen_debug(Tonegen* self, int c) {
   switch (c) {
     case 'a': tonegen_init(); break;
     case 'b': tonegen_set_volume(self, self->volume + 1); break;

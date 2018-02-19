@@ -12,5 +12,5 @@ extern const int nodeId; // fill in proper ID
 void controller_CAN(Controller*, CANMsg*);
 
 // only volume control via keyboard!
-void controller_keyboard(Controller*, int c);
+void controller_debug(Controller*, int c);
 

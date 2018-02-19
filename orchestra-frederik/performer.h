@@ -15,5 +15,5 @@ void performer_set_bpm(Performer*, int bpm);
 void performer_set_volume(Performer*, int volume);
 
 // Debug control
-void performer_control(Performer*, int c);
+void performer_debug(Performer*, int c);
 #endif

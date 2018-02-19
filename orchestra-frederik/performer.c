@@ -62,7 +62,7 @@ void performer_sync(Performer* self, int unused) {
   }
 }
 
-void performer_control(Performer* self, int c) {
+void performer_debug(Performer* self, int c) {
   switch (c) {
     case 'a': performer_init(); break;
     case 'b': performer_play(self,0); break;
