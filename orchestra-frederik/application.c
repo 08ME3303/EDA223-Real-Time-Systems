@@ -11,6 +11,9 @@
 #include "performer.h"
 #include "conductor.h"
 
+// performer offset in bars
+int canon = 0;
+
 // todo: add bpm, volume state...
 struct App {
   Object super;
@@ -21,7 +24,7 @@ App app = { initObject() };
 void app_sci_interrupt(App* self, int c);
 Serial sci = initSerial(SCI_PORT0, &app, app_sci_interrupt);
 
-const int nodeId = 0;
+
 void app_can_interrupt(App* self, int unused);
 Can can = initCan(CAN_PORT0, &app, app_can_interrupt);
 
@@ -61,7 +64,7 @@ void app_can(App* self, CANMsg* msg) {
   if (strcmp((char*) msg->buff, "stop") == 0) {
     SYNC(&performer, performer_stop, 0);
   } else if (strcmp((char*) msg->buff, "play") == 0) {
-    SYNC(&performer, performer_play, nodeId * 8 * 2);
+    SYNC(&performer, performer_play, canon * 8);
   } else if (strcmp((char*) msg->buff, "sync") == 0) {
     SYNC(&performer, performer_sync, 0);
   } else if (strncmp((char*) msg->buff, "bpm ", 4) == 0) {
@@ -90,7 +93,11 @@ void controller_keyboard(App* self, int c) {
 void app_init(App* self, int unused) {
   SCI_INIT(&sci);
   CAN_INIT(&can);
-  
+
+  // init our own objects (all of them!)
+  performer_init();
+  conductor_init();
+
   SCI_WRITE(&sci, "Select: 0 -> Tonegen, 1 -> Instrument, 2 -> Performer, 3 -> Conductor.\n");
 }
 

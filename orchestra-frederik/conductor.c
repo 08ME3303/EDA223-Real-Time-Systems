@@ -8,6 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 
+// the CAN node id. completely irrelevant.
+const int nodeId = 0;
+
 struct Conductor {
   Object super;
   Msg call;
