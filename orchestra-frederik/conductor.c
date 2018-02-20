@@ -24,10 +24,8 @@ void conductor_init() {
 extern Can can;
 extern Serial sci;
 
-static int conduct_can_debug = 1;
 
 static void conductor_sync(Conductor* self, int unused);
-
 static void conductor_send(Conductor* self, char* text);
 
 void conductor_conduct(Conductor* self, int unused) {
@@ -38,12 +36,14 @@ void conductor_conduct(Conductor* self, int unused) {
 
   ABORT(self->call);
   // sync at every beat (quarter note)
-  self->call = SEND(MSEC((unsigned int) 60000 / self->bpm), USEC(100), self, conductor_sync, 0);
+  self->call = SEND(MSEC(((unsigned int) 60000 / self->bpm) * 4),
+                 USEC(100), self, conductor_sync, 0);
 }
 
 // halt and reset the orchestra.
 void conductor_stop(Conductor* self, int unused) {
   ABORT(self->call);
+  self->call = NULL;  // fix the ABORT bug
   conductor_send(self, "stop");
 }
 
@@ -63,7 +63,8 @@ void conductor_set_key(Conductor* self, int key) {
 
 static void conductor_sync(Conductor* self, int unused) {
   conductor_send(self, "sync");
-  self->call = SEND(MSEC((unsigned int) 60000 / self->bpm), USEC(100), self, conductor_sync, 0);
+  self->call = SEND(MSEC(((unsigned int) 60000 / self->bpm) * 4),
+                 USEC(100), self, conductor_sync, 0);
 }
 
 static void conductor_send(Conductor* self, char* text) {
@@ -72,26 +73,14 @@ static void conductor_send(Conductor* self, char* text) {
     msg.nodeId = nodeId;
     msg.length = 8;
     strcpy((char*) msg.buff, text);
-    CAN_SEND(&can, &msg);
 
-    if (conduct_can_debug) {
-      SCI_WRITE(&sci, "Can msg: ");
-      SCI_WRITE(&sci, msg.buff);
-      SCI_WRITE(&sci, "\n");
-    } else {
-      //SYNC(&controller, controller_parsemsg, &msg); // loop-back to controller
-    }
+    CAN_SEND(&can, &msg); // remove this when using the physical loopback cable
+    SYNC(&app, app_can, &msg); // loop-back to controller
 }
 
 void conductor_debug(Conductor* self, int c) {
   switch (c) {
-    case 'a': if (!conduct_can_debug) {
-                SCI_WRITE(&sci, "Conductor CAN debug enabled\n");
-                conduct_can_debug = 1;
-              } else {
-                SCI_WRITE(&sci, "Conductor CAN debug disabled\n");
-                conduct_can_debug = 0;
-              } break;
+    case 'a': conductor_init(); break;
 
     case 'b': conductor_conduct(self,0); break;
     case 'c': conductor_stop(self,0); break;
