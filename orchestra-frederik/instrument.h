@@ -21,3 +21,4 @@ void instrument_play_note(Instrument*, Note*);
 void instrument_debug(Instrument*, int c);
 
 #endif
+

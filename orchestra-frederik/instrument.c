@@ -30,6 +30,7 @@ void instrument_play_note(Instrument* self, Note* note) {
 }
 
 static void instrument_end_note(Instrument* self, int unused) {
+  self->call = NULL;  // fix for the ABORT bug
   SYNC(&tonegen, tonegen_set_volume, 0);
 }
 
@@ -38,7 +39,7 @@ void instrument_debug(Instrument* self, int c) {
   if (c == 'a') {
     instrument_init();
   } else if (c >= 'b' && c <= 'b' + MAX_PITCHINDEX - MIN_PITCHINDEX) {
-    Note note = {c - 'b' + MIN_PITCHINDEX, SEC(1), 3};
+    Note note = {c - 'b' + MIN_PITCHINDEX, SEC(1), 15};
     instrument_play_note(self, &note);
   }
 }
