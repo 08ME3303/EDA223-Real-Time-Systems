@@ -11,15 +11,14 @@
 #include "performer.h"
 #include "conductor.h"
 
-// performer offset in bars
-int canon = 0;
-
 // todo: add bpm, volume state...
 struct App {
   Object super;
+  int canon; // performer canon multiplier
+  int can_read_disable;
 };
 
-App app = { initObject() };
+App app = { initObject(), 0, 0 };
 
 void app_sci_interrupt(App* self, int c);
 Serial sci = initSerial(SCI_PORT0, &app, app_sci_interrupt);
@@ -50,12 +49,6 @@ void app_sci_interrupt(App* self, int c) {
   }
 }
 
-void app_can_interrupt(App* self, int unused) {
-  CANMsg msg;
-  CAN_RECEIVE(&can, &msg);
-  app_can(self, &msg);
-}
-
 void app_can(App* self, CANMsg* msg) {
   SCI_WRITE(&sci, "Can msg received: ");
   SCI_WRITE(&sci, msg->buff);
@@ -64,7 +57,9 @@ void app_can(App* self, CANMsg* msg) {
   if (strcmp((char*) msg->buff, "stop") == 0) {
     SYNC(&performer, performer_stop, 0);
   } else if (strcmp((char*) msg->buff, "play") == 0) {
-    SYNC(&performer, performer_play, canon * 8);
+    SYNC(&performer, performer_play, 0);
+  } else if (strncmp((char*) msg->buff, "cnn ", 4) == 0) {
+    SYNC(&performer, performer_play, atoi((char*) msg->buff + 4));
   } else if (strcmp((char*) msg->buff, "sync") == 0) {
     SYNC(&performer, performer_sync, 0);
   } else if (strncmp((char*) msg->buff, "bpm ", 4) == 0) {
@@ -73,6 +68,14 @@ void app_can(App* self, CANMsg* msg) {
     SYNC(&performer, performer_set_key, atoi((char*) msg->buff + 4));
   } else {
     SCI_WRITE(&sci, "Ignored unknown CAN message.\n");
+  }
+}
+
+void app_can_interrupt(App* self, int unused) {
+  CANMsg msg;
+  CAN_RECEIVE(&can, &msg);
+  if (!self->can_read_disable) {
+    app_can(self, &msg);
   }
 }
 
@@ -105,5 +108,19 @@ int main() {
   INSTALL(&sci, sci_interrupt, SCI_IRQ0);
   INSTALL(&can, can_interrupt, CAN_IRQ0);
   TINYTIMBER(&app, app_init, 0);
+}
+
+// the CAN node id. completely irrelevant.
+const int nodeId = 0;
+
+void can_send_str(Can* self, char* text) {
+    CANMsg msg;
+    msg.msgId = 1;      // unused
+    msg.nodeId = nodeId;
+    msg.length = 8;
+    strcpy((char*) msg.buff, text);
+
+    CAN_SEND(self, &msg); // remove this when using the physical loopback cable
+    SYNC(&app, app_can, &msg); // loop-back to controller
 }
 

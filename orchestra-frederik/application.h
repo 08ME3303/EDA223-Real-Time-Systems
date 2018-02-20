@@ -12,6 +12,6 @@ extern Can can;
 typedef struct App App;
 extern App app;
 
-void app_can(App* self, CANMsg* msg);
+void can_send_str(Can*, char*);
 #endif
 
