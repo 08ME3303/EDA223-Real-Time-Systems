@@ -13,3 +13,4 @@ void tonegen_set_period(Tonegen*, int per); // per in usec!
 // (DEBUG) Control directly via keyboard (char) commands
 void tonegen_debug(Tonegen*, int c);
 #endif
+

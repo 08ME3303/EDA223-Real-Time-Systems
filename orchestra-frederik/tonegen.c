@@ -10,11 +10,16 @@ struct Tonegen {
 };
 
 // There single global tone generator!
-Tonegen tonegen = { initObject()  // Object
-                  , NULL          // Msg
-                  ,  USEC(1000)   // Time, corresponding to 500 Hz
-                  ,  0            // Volume, muted
-                  };
+Tonegen tonegen;
+
+static void tonegen_edge(Tonegen* self, int state);
+void tonegen_init() {
+  tonegen = (Tonegen) { initObject()  // Object
+						, NULL          // Msg
+						,  USEC(1000)   // Time, corresponding to 500 Hz
+						, 0 };           // Volume, muted
+  SYNC(&tonegen, tonegen_edge, 0);
+}
 
 // Setters
 void tonegen_set_volume(Tonegen* self, int vol) {
@@ -30,15 +35,10 @@ void tonegen_set_period(Tonegen* self, int per) {
 char* const DAC_OUT = (char*) 0x4000741C;
 
 static void tonegen_edge(Tonegen* self, int state) {
-  *DAC_OUT = state ? self->volume : 0;
+  *DAC_OUT = state * self->volume;
   ABORT(self->call);
   self->call = SEND(self->period, USEC(100), self, tonegen_edge, !state);
 }
-
-void tonegen_init() {
-  SYNC(&tonegen, tonegen_edge, 0);
-}
-
 
 // (DEBUG) Control directly via keyboard (char) commands
 void tonegen_debug(Tonegen* self, int c) {
