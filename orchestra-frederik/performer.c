@@ -94,8 +94,8 @@ void performer_eighth(Performer* self, int unused) {
 
   if (self->eighths_delay == 0) {
     // calculate current position in eighths
-    int j = 0;
-    for (int i=0; i<self->position; i++)
+    int i, j = 0;
+    for (i=0; i<self->position; i++)
       j += shape_eighths(score_lengths[i]);
 
     // start of new bar, update tempo and key

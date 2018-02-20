@@ -1,4 +1,4 @@
-/* -----  Main / Initialisation  ----- */
+/* -----  Application  ----- */
 #include "application.h"
 #include "sciTinyTimber.h"
 
@@ -11,7 +11,14 @@
 #include "performer.h"
 #include "conductor.h"
 
-// todo: add bpm, volume state...
+
+/* -----  Initialisation  ----- */
+void app_sci_interrupt(App* self, int c);
+Serial sci = initSerial(SCI_PORT0, &app, app_sci_interrupt);
+
+void app_can_interrupt(App* self, int unused);
+Can can = initCan(CAN_PORT0, &app, app_can_interrupt);
+
 struct App {
   Object super;
   int canon; // performer canon multiplier
@@ -20,35 +27,24 @@ struct App {
 
 App app = { initObject(), 0, 0 };
 
-void app_sci_interrupt(App* self, int c);
-Serial sci = initSerial(SCI_PORT0, &app, app_sci_interrupt);
+void app_init(App* self, int unused) {
+  SCI_INIT(&sci);
+  CAN_INIT(&can);
 
-
-void app_can_interrupt(App* self, int unused);
-Can can = initCan(CAN_PORT0, &app, app_can_interrupt);
-
-void app_sci_interrupt(App* self, int c) {
-  static int state = -1;
-  char buf[80];
-
-  sprintf(buf,"SCI char: %c\n",c);
-  SCI_WRITE(&sci, buf);
-  if (c >= '0' && c <= '5') {
-    state = c - '0';
-    SCI_WRITE(&sci, "Changed Mode.\n");
-  } else if (state == -1) {
-    SCI_WRITE(&sci, "Please select desired mode.\n");
-  } else if (state == 0) {
-    SYNC(&tonegen, tonegen_debug, c);
-  } else if (state == 1) {
-    SYNC(&instrument, instrument_debug, c);
-  } else if (state == 2) {
-    SYNC(&performer, performer_debug, c);
-  } else if (state == 3) {
-    SYNC(&conductor, conductor_debug, c);
-  }
+  // init our own objects (all of them!)
+  performer_init();
+  conductor_init();
 }
 
+int main() {
+  INSTALL(&sci, sci_interrupt, SCI_IRQ0);
+  INSTALL(&can, can_interrupt, CAN_IRQ0);
+  TINYTIMBER(&app, app_init, 0);
+  return 0;
+}
+
+
+/* -----  CAN  ----- */
 void app_can(App* self, CANMsg* msg) {
   SCI_WRITE(&sci, "Can msg received: ");
   SCI_WRITE(&sci, msg->buff);
@@ -79,37 +75,6 @@ void app_can_interrupt(App* self, int unused) {
   }
 }
 
-/* SCI still controls volume and key of performer, rest is done by conductor
-void controller_keyboard(App* self, int c) {
-  if (c >= 'a' && c <= 'a' + 20) {
-    SYNC(&performer, performer_set_volume, c - 'a');
-
-    char buf[80];
-    sprintf(buf,"Set volume to %d\n", c - 'a');
-    SCI_WRITE(&sci, buf);
-  } else {
-    SCI_WRITE(&sci, "Ignored unknown keyboad input.\n");
-  }
-}
-*/
-
-void app_init(App* self, int unused) {
-  SCI_INIT(&sci);
-  CAN_INIT(&can);
-
-  // init our own objects (all of them!)
-  performer_init();
-  conductor_init();
-
-  SCI_WRITE(&sci, "Select: 0 -> Tonegen, 1 -> Instrument, 2 -> Performer, 3 -> Conductor.\n");
-}
-
-int main() {
-  INSTALL(&sci, sci_interrupt, SCI_IRQ0);
-  INSTALL(&can, can_interrupt, CAN_IRQ0);
-  TINYTIMBER(&app, app_init, 0);
-}
-
 // the CAN node id. completely irrelevant.
 const int nodeId = 0;
 
@@ -120,7 +85,30 @@ void can_send_str(Can* self, char* text) {
     msg.length = 8;
     strcpy((char*) msg.buff, text);
 
-    CAN_SEND(self, &msg); // remove this when using the physical loopback cable
+    CAN_SEND(self, &msg);
     SYNC(&app, app_can, &msg); // loop-back to controller
 }
 
+
+/* -----  SCI  ----- */
+void app_sci_interrupt(App* self, int c) {
+  static int state = -1;
+  char buf[80];
+
+  sprintf(buf,"SCI char: %c\n",c);
+  SCI_WRITE(&sci, buf);
+  if (c >= '0' && c <= '5') {
+    state = c - '0';
+    SCI_WRITE(&sci, "Changed Mode.\n");
+  } else if (state == -1) {
+    SCI_WRITE(&sci, "Please select desired mode.\n");
+  } else if (state == 0) {
+    SYNC(&tonegen, tonegen_debug, c);
+  } else if (state == 1) {
+    SYNC(&instrument, instrument_debug, c);
+  } else if (state == 2) {
+    SYNC(&performer, performer_debug, c);
+  } else if (state == 3) {
+    SYNC(&conductor, conductor_debug, c);
+  }
+}
