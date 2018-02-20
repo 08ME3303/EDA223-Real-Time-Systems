@@ -37,7 +37,7 @@ static void instrument_end_note(Instrument* self, int unused) {
 // (DEBUG) Control directly via keyboard (char) commands
 void instrument_debug(Instrument* self, int c) {
   if (c == 'a') {
-    instrument_init();
+    // instrument_init();
   } else if (c >= 'b' && c <= 'b' + MAX_PITCHINDEX - MIN_PITCHINDEX) {
     Note note = {c - 'b' + MIN_PITCHINDEX, SEC(1), 15};
     instrument_play_note(self, &note);

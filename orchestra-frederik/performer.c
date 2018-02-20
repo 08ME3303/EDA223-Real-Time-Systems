@@ -131,7 +131,7 @@ void performer_sixteenth(Performer* self, int unused) {
 void performer_debug(Performer* self, int c) {
   static int bpm;
   switch (c) {
-    case 'a': performer_init(); bpm = 120; break;
+    case 'a': /*performer_init();*/ bpm = 120; break;
     case 'b': performer_play(self,0); break;
     case 'c': performer_stop(self,0); break;
     case 'd': performer_sync(self,0); break;

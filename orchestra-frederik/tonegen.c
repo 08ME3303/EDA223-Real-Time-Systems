@@ -43,7 +43,7 @@ static void tonegen_edge(Tonegen* self, int state) {
 // (DEBUG) Control directly via keyboard (char) commands
 void tonegen_debug(Tonegen* self, int c) {
   switch (c) {
-    case 'a': tonegen_init(); break;
+    //case 'a': tonegen_init(); break;
     case 'b': tonegen_set_volume(self, self->volume + 1); break;
     case 'c': tonegen_set_volume(self, self->volume - 1); break;
     case 'd': tonegen_set_period(self, USEC_OF(self->period) << 1); break;

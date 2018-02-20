@@ -83,7 +83,7 @@ static void conductor_send(Conductor* self, char* text) {
 
 void conductor_debug(Conductor* self, int c) {
   switch (c) {
-    case 'a': conductor_init(); break;
+    // case 'a': conductor_init(); break;
 
     case 'b': conductor_conduct(self,0); break;
     case 'c': conductor_stop(self,0); break;
