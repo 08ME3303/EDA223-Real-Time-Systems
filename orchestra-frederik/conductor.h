@@ -7,6 +7,7 @@ void conductor_init();
 void conductor_set_bpm(Conductor*, int bpm);
 void conductor_set_key(Conductor*, int key);
 void conductor_conduct(Conductor*, int unused);
+void conductor_canon(Conductor*, int step);
 void conductor_stop(Conductor*, int unused);
 
 // Debug keyboard control

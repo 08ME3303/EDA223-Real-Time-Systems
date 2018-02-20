@@ -29,6 +29,20 @@ void conductor_conduct(Conductor* self, int unused) {
   self->call = SEND(self->syncperiod, USEC(100), self, conductor_sync, 0);
 }
 
+void conductor_canon(Conductor* self, int step) {
+  // make sure everybody starts with the same tempo
+  conductor_set_bpm(self, 120);
+  conductor_set_key(self,0);
+  
+  char buf[8];
+  sprintf(buf, "cnn %d", step);
+  can_send_str(&can, buf);
+
+  ABORT(self->call);
+  // sync at every beat (quarter note)
+  self->call = SEND(self->syncperiod, USEC(100), self, conductor_sync, 0);
+}
+
 // halt and reset the orchestra.
 void conductor_stop(Conductor* self, int unused) {
   ABORT(self->call);
