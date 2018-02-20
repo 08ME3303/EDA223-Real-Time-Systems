@@ -103,6 +103,7 @@ void app_sci_interrupt(App* self, int c) {
         SCI_WRITE(&sci, "Entered slave mode. Press '1' to switch to leader mode.\n");
         SCI_WRITE(&sci, "Press 'q' and 'w' to decrease and increase the volume, respectively.\n");
         mode = 0;
+        self->can_read_disable = 0;
       } break;
     
       case '1': {
