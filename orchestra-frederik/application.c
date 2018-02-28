@@ -129,7 +129,7 @@ void app_sci_interrupt(App* self, int c) {
       case 'p': {
         if (mode == 1) {
           SCI_WRITE(&sci, "Conductor: Play!.\n");
-          SYNC(&conductor, conductor_conduct, 0);
+          ASYNC(&conductor, conductor_conduct, 0);
         } else {
           SCI_WRITE(&sci, "Ignored conductor command.\n");
         }
@@ -138,7 +138,7 @@ void app_sci_interrupt(App* self, int c) {
       case 'c': {
         if (mode == 1) {
           SCI_WRITE(&sci, "Conductor: Canon 4!.\n");
-          SYNC(&conductor, conductor_canon, 4);
+          ASYNC(&conductor, conductor_canon, 4);
         } else {
           SCI_WRITE(&sci, "Ignored conductor command.\n");
         }
@@ -147,14 +147,14 @@ void app_sci_interrupt(App* self, int c) {
       case 'd': {
         if (mode == 1) {
           SCI_WRITE(&sci, "Conductor: Canon 8!.\n");
-          SYNC(&conductor, conductor_canon, 8);
+          ASYNC(&conductor, conductor_canon, 8);
         } else {
           SCI_WRITE(&sci, "Ignored conductor command.\n");
         }
       } break;
 
       case 's': {
-        SYNC(&conductor, conductor_stop, 0);
+        ASYNC(&conductor, conductor_stop, 0);
       } break;
 
       case 'b': {
@@ -175,7 +175,7 @@ void app_sci_interrupt(App* self, int c) {
       acc = 10 * acc + (c - '0');
     } else if (c == 'e') {
       SCI_WRITE(&sci, "\nUpdating bpm.");
-      SYNC(&conductor, conductor_set_bpm, acc);
+      ASYNC(&conductor, conductor_set_bpm, acc);
       state = 0;
     }
   } else if (state == 2) {
@@ -184,11 +184,11 @@ void app_sci_interrupt(App* self, int c) {
       acc = 10 * acc + (c - '0');
     } else if (c == '+') {
       SCI_WRITE(&sci, "\nUpdating key.");
-      SYNC(&conductor, conductor_set_key, acc);
+      ASYNC(&conductor, conductor_set_key, acc);
       state = 0;
     } else if (c == '-') {
       SCI_WRITE(&sci, "\nUpdating key.");
-      SYNC(&conductor, conductor_set_key, -acc);
+      ASYNC(&conductor, conductor_set_key, -acc);
       state = 0;
     }
   }
@@ -212,6 +212,6 @@ void app_debug(App* self, int c) {
   } else if (state == 2) {
     SYNC(&performer, performer_debug, c);
   } else if (state == 3) {
-    SYNC(&conductor, conductor_debug, c);
+    ASYNC(&conductor, conductor_debug, c);
   }
 }
