@@ -30,7 +30,7 @@ void performer_init() {
 	              .state = 0,
 	              .position = 0,
 	              .eighths_delay = 0,
-	              .period = MSEC((unsigned int) 60000 / (4 * 120)), // 120bpm
+	              .period = SEC(1) / (4 * 120), // 120bpm
                 .key = 0,
                 .volume = 15 };
   performer.next.period = performer.period;
@@ -42,7 +42,7 @@ void performer_set_key(Performer* self, int key) {
 }
 
 void performer_set_bpm(Performer* self, int bpm) {
-  self->next.period = MSEC((unsigned int) 60000 / (4 * bpm));
+  self->next.period = SEC(1) / (4 * bpm);
 }
 
 void performer_set_volume(Performer* self, int volume) {
