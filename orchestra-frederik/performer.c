@@ -58,10 +58,10 @@ void performer_stop(Performer* self, int unused) {
 
 void performer_eighth(Performer* self, int unused);
 
-// play the piece, delayed by `delay' eighths
+// play the piece, delayed by `delay' quarters
 void performer_play(Performer* self, int delay) {
   performer_stop(self, 0);
-  self->eighths_delay = delay;
+  self->eighths_delay = delay * 2;
   performer_eighth(self, 0);
 }
 
