@@ -22,7 +22,7 @@ void conductor_conduct(Conductor* self, int unused) {
   // make sure everybody starts with the same tempo
   conductor_set_bpm(self, 120);
   conductor_set_key(self,0);
-  can_send_str(&can, "play");
+  SYNC(&app, app_send_str, "play");
 
   ABORT(self->call);
   // sync at every beat (quarter note)
@@ -33,10 +33,10 @@ void conductor_canon(Conductor* self, int step) {
   // make sure everybody starts with the same tempo
   conductor_set_bpm(self, 120);
   conductor_set_key(self,0);
-  
+
   char buf[8];
   sprintf(buf, "cnn %d", step);
-  can_send_str(&can, buf);
+  SYNC(&app, app_send_str, buf);
 
   ABORT(self->call);
   // sync at every beat (quarter note)
@@ -47,24 +47,24 @@ void conductor_canon(Conductor* self, int step) {
 void conductor_stop(Conductor* self, int unused) {
   ABORT(self->call);
   self->call = NULL;  // fix the ABORT bug
-  can_send_str(&can, "stop");
+  SYNC(&app, app_send_str, "stop");
 }
 
 void conductor_set_bpm(Conductor* self, int bpm) {
   self->syncperiod = MSEC(((unsigned int) 60000 / bpm) * 4);
   char buf[8];
   sprintf(buf, "bpm %d", bpm);
-  can_send_str(&can, buf);
+  SYNC(&app, app_send_str, buf);
 }
 
 void conductor_set_key(Conductor* self, int key) {
   char buf[8];
   sprintf(buf, "key %d", key);
-  can_send_str(&can, buf);
+  SYNC(&app, app_send_str, buf);
 }
 
 static void conductor_sync(Conductor* self, int unused) {
-  can_send_str(&can, "sync");
+  SYNC(&app, app_send_str, "sync");
   self->call = SEND(self->syncperiod, USEC(100), self, conductor_sync, 0);
 }
 

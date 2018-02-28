@@ -78,15 +78,15 @@ void app_can_interrupt(App* self, int unused) {
 // the CAN node id. completely irrelevant.
 const int nodeId = 0;
 
-void can_send_str(Can* self, char* text) {
+void app_send_str(App* self, char* text) {
     CANMsg msg;
     msg.msgId = 1;      // unused
     msg.nodeId = nodeId;
     msg.length = 8;
     strcpy((char*) msg.buff, text);
 
-    CAN_SEND(self, &msg);
-    SYNC(&app, app_can, &msg); // loop-back to controller
+    CAN_SEND(&can, &msg);
+    app_can(self, &msg); // loop-back
 }
 
 
@@ -96,7 +96,7 @@ void app_sci_interrupt(App* self, int c) {
   static int volume = 15;
   static int state = 0; // input bpm 1, input key 2
   static int acc;
-  
+
   if (state == 0) {
     switch (c) {
       case '0': {
@@ -105,7 +105,7 @@ void app_sci_interrupt(App* self, int c) {
         mode = 0;
         self->can_read_disable = 0;
       } break;
-    
+
       case '1': {
         SCI_WRITE(&sci, "Entered leader mode. Press '0' to switch to slave mode.\n");
         SCI_WRITE(&sci, "Press 'p' to conduct in chorus form, 'c' for 1-bar canon,"
@@ -115,17 +115,17 @@ void app_sci_interrupt(App* self, int c) {
         mode = 1;
         self->can_read_disable = 1;
       } break;
-    
+
       case 'q': {
         volume = volume > 0 ? volume - 1 : 0;
         SYNC(&performer, performer_set_volume, volume);
       } break;
-    
+
       case 'w': {
         volume = volume < 20 ? volume + 1 : 20;
         SYNC(&performer, performer_set_volume, volume);
       } break;
-      
+
       case 'p': {
         if (mode == 1) {
           SCI_WRITE(&sci, "Conductor: Play!.\n");
@@ -134,7 +134,7 @@ void app_sci_interrupt(App* self, int c) {
           SCI_WRITE(&sci, "Ignored conductor command.\n");
         }
       } break;
-      
+
       case 'c': {
         if (mode == 1) {
           SCI_WRITE(&sci, "Conductor: Canon 4!.\n");
@@ -143,7 +143,7 @@ void app_sci_interrupt(App* self, int c) {
           SCI_WRITE(&sci, "Ignored conductor command.\n");
         }
       } break;
-      
+
       case 'd': {
         if (mode == 1) {
           SCI_WRITE(&sci, "Conductor: Canon 8!.\n");
@@ -152,17 +152,17 @@ void app_sci_interrupt(App* self, int c) {
           SCI_WRITE(&sci, "Ignored conductor command.\n");
         }
       } break;
-      
+
       case 's': {
         SYNC(&conductor, conductor_stop, 0);
       } break;
-      
+
       case 'b': {
         SCI_WRITE(&sci, "Enter new bpm: ");
         state = 1;
         acc = 0;
       } break;
-      
+
       case 'k': {
         SCI_WRITE(&sci, "Enter new key: ");
         state = 2;
@@ -177,7 +177,7 @@ void app_sci_interrupt(App* self, int c) {
       SCI_WRITE(&sci, "\nUpdating bpm.");
       SYNC(&conductor, conductor_set_bpm, acc);
       state = 0;
-    }  
+    }
   } else if (state == 2) {
     if (c >= '0' && c <= '9') {
       SCI_WRITECHAR(&sci, c);
@@ -191,7 +191,7 @@ void app_sci_interrupt(App* self, int c) {
       SYNC(&conductor, conductor_set_key, -acc);
       state = 0;
     }
-  } 
+  }
 }
 
 void app_debug(App* self, int c) {
